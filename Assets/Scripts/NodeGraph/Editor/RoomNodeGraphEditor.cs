@@ -11,6 +11,7 @@ public class RoomNodeGraphEditor : EditorWindow
 {
     private GUIStyle roomNodeStyle;
     private static RoomNodeGraphSO currentRoomNodeGraph;
+    private RoomNodeSO currentRoomNode = null;
     private RoomNodeTypeListSO roomNodeTypeList;
     
     //node layout 
@@ -20,7 +21,7 @@ public class RoomNodeGraphEditor : EditorWindow
     private int nodeBorder = 12;
     
     [MenuItem("Room Node Graph Editor", menuItem = "Window/Dungeon Editor/Room Node Graph Editor")]
-    private static void OpenWindow()
+    private static void OpenWindow()    
     {
         GetWindow<RoomNodeGraphEditor>("Room Node Graph Editor");
     }
@@ -81,7 +82,37 @@ public class RoomNodeGraphEditor : EditorWindow
 
     private void ProcessEvents(Event currentEvent)
     {
-        ProcessRoomNodeGraphEvent(currentEvent);
+        //get room node that mouse is over if its is null or not corrently been dragged
+        if (currentRoomNode == null || currentRoomNode.isLeftClickDragging == false)
+        {
+            currentRoomNode = IsMouseOverRoomNode(currentEvent);
+        }
+
+        //if mouse isnt over a room node
+        if (currentRoomNode == null)
+        {
+            ProcessRoomNodeGraphEvent(currentEvent);
+        }
+        //else process room node events
+        else
+        {
+            currentRoomNode.ProcessEvents(currentEvent);
+        }
+    }
+
+    
+    //check to see to mouse is over a room node - then return the room node 
+    private RoomNodeSO IsMouseOverRoomNode(Event currentEvent)
+    {
+        for (int i = currentRoomNodeGraph.roomNodeList.Count - 1; i >= 0; i--)
+        {
+            if (currentRoomNodeGraph.roomNodeList[i].rect.Contains(currentEvent.mousePosition))
+            {
+                return currentRoomNodeGraph.roomNodeList[i];
+            }
+        }
+
+        return null;
     }
 
     //Process Room Node Graph Events
