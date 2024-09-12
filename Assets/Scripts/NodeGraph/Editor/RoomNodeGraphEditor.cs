@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Callbacks;
 
 public class RoomNodeGraphEditor : EditorWindow
 {
@@ -20,8 +21,18 @@ public class RoomNodeGraphEditor : EditorWindow
         GetWindow<RoomNodeGraphEditor>("Room Node Graph Editor");
     }
 
+    /// <summary>
+    /// opens the room node graph editor window if a room node graph scriptable object asset is double clicked in the inspector
+    /// </summary>
+    [OnOpenAsset(0)] //Need the namespace UnityEditor.Callback
+    public static bool OnDoubleClickAsset(int instanceID, int line)
+    {
+        return true;
+    }
+
     private void OnEnable()
     {
+        //layout style
         roomNodeStyle = new GUIStyle();
         roomNodeStyle.normal.background = EditorGUIUtility.Load("node1") as Texture2D;  //loading inbuilt texture
         roomNodeStyle.normal.textColor = Color.white;
