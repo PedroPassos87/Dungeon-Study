@@ -17,5 +17,41 @@ By implementing this editor window, we create a dedicated space where we can vis
 
 The window is accessed via the Unity menu under `Window > Dungeon Editor > Room Node Graph Editor`.
 
-You can find how it is created under `Scripts > NodeGraph > Editor`.
+## Adding Functionality to the Room Node Graph Editor
+
+Here, we extend the **Room Node Graph Editor** by introducing key functionalities for managing and visualizing the room nodes and their connections.
+
+### Key Concepts:
+
+- **Node Layout and Appearance:** 
+  We define the layout properties of each node, such as width, height, padding, and border, to ensure the nodes are visually distinct and consistently styled within the editor.
+
+- **Connecting Lines Between Nodes:**
+  To represent the relationships between rooms, we include functionality to draw connecting lines between nodes. This helps visualize how rooms are linked in the dungeon.
+
+- **Event Handling:**
+  The editor window listens for various user interactions, such as mouse clicks and drags. These interactions allow us to:
+  - Create new nodes at the clicked position.
+  - Draw connection lines between nodes.
+  - Manage interactions between nodes, like dragging or selecting.
+
+- **Context Menu for Node Creation:**
+  When right-clicking within the graph editor, a context menu appears that allows the creation of new room nodes at the mouse position.
+  
+### Workflow Overview:
+
+1. **Node Creation:**
+   Users can create new room nodes by right-clicking in the graph editor and selecting an option from the context menu. These nodes are then placed at the mouse position.
+
+2. **Node Management:**
+   Each room node is stored within a list and can be manipulated via user interactions. Nodes can be connected to each other, forming a visual graph of the dungeon layout.
+
+3. **Dragging Lines to Connect Nodes:**
+   Users can drag lines from one node to another, establishing a connection between parent and child nodes. This connection represents the paths between rooms in the dungeon.
+
+4. **Visual Representation:**
+   The editor window provides a visual representation of the dungeon's structure, allowing us to see the nodes and their connections in real-time.
+
+You can find more details on the script's implementation in `Scripts > NodeGraph > Editor`.
+
 
