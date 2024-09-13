@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.MPE;
+using UnityEngine.XR;
 using Vector2 = UnityEngine.Vector2;
 
 public class RoomNodeGraphEditor : EditorWindow
@@ -24,6 +25,7 @@ public class RoomNodeGraphEditor : EditorWindow
     
     //connecting line values
     private float connectingLineWidth = 3f;
+    private float connectingLineArrowSize = 6f;
     
     [MenuItem("Room Node Graph Editor", menuItem = "Window/Dungeon Editor/Room Node Graph Editor")]
     private static void OpenWindow()    
@@ -74,9 +76,11 @@ public class RoomNodeGraphEditor : EditorWindow
             //draw line if being dragged
             DrawDraggedLine();                 //this method is called first so the track line gets draw first and will appear behind to the room node
             
-            
             //process events
             ProcessEvents(Event.current);
+            
+            //draw connections between room nodes
+            DrawRoomConnections();
             
             //draw room nodes
             DrawRoomNodes();
@@ -207,6 +211,9 @@ public class RoomNodeGraphEditor : EditorWindow
         
         AssetDatabase.SaveAssets();
         
+        //refresh graph node dictionary
+        currentRoomNodeGraph.OnValidate();
+        
     }
     
     //process mouse up events
@@ -262,6 +269,62 @@ public class RoomNodeGraphEditor : EditorWindow
     {
         currentRoomNodeGraph.roomNodeToDrawLineFrom = null;
         currentRoomNodeGraph.linePosition = Vector2.zero;
+        GUI.changed = true;
+    }
+    
+    //draw conections in the graph window between room nodes
+    private void DrawRoomConnections()
+    {
+        
+        //loop through all room nodes
+        foreach (RoomNodeSO roomNode in currentRoomNodeGraph.roomNodeList)
+        {
+            if (roomNode.childRoomNodeIDList.Count > 0)
+            {
+                //loop through child room nodes
+                foreach (string childRoomNodeID in roomNode.childRoomNodeIDList)
+                {
+                    //get child room node from dictionary
+                    if (currentRoomNodeGraph.roomNodeDictionary.ContainsKey(childRoomNodeID))
+                    {
+                        DrawConnectionLine(roomNode, currentRoomNodeGraph.roomNodeDictionary[childRoomNodeID]);
+                        
+                        GUI.changed = true;
+                    }
+                }
+            }
+        }
+    }
+
+    //draw connection line between the parent room node and child room node
+    private void DrawConnectionLine(RoomNodeSO parentRoomNode, RoomNodeSO childRoomNode)
+    {
+        //get line start and end position
+        Vector2 startPosition = parentRoomNode.rect.center;
+        Vector2 endPosition = childRoomNode.rect.center;
+        
+        //calculate midway point
+        Vector2 midPosition = (endPosition + startPosition) / 2f;
+        
+        // vector from start to end position of line
+        Vector2 direction = endPosition - startPosition;
+        
+        //calculate normalised perpendicular position from their mid point
+        Vector2 arrowTailPoint1 =
+            midPosition - new Vector2(-direction.y, direction.x).normalized * connectingLineArrowSize;
+        Vector2 arrowTailPoint2 =
+            midPosition + new Vector2(-direction.y, direction.x).normalized * connectingLineArrowSize;
+        
+        //calaculate mid point offset position for arrow head
+        Vector2 arrowHeadPoint = midPosition + direction.normalized * connectingLineArrowSize;
+        
+        //draw arrow
+        Handles.DrawBezier(arrowHeadPoint,arrowTailPoint1,arrowHeadPoint,arrowTailPoint1,Color.white, null, connectingLineWidth);
+        Handles.DrawBezier(arrowHeadPoint,arrowTailPoint2,arrowHeadPoint,arrowTailPoint2,Color.white, null, connectingLineWidth);
+        
+        //draw line
+        Handles.DrawBezier(startPosition,endPosition,startPosition,endPosition,Color.white, null, connectingLineWidth);
+        
         GUI.changed = true;
     }
 
