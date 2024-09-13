@@ -1,6 +1,6 @@
 # Dungeon Study in Unity
 
-The main idea of this project is to develop a **dungeon** using Unity, where the rooms are procedurally generated. I'm using a **Node Graph** integrated with a custom **Editor** and a node **overview** for management. The goal is to keep the room generation **randomized**, yet **well-structured**, ensuring a unique experience for the player.
+The main goal of this project is to develop a **dungeon** using Unity, where the rooms are procedurally generated. I'm using a **Node Graph** integrated with a custom **Editor** and a node **overview** for management. The focus is to maintain room generation **randomized**, yet **well-structured**, ensuring a unique experience for the player.
 
 ## What is a Node Graph?
 
@@ -9,49 +9,76 @@ A **Node Graph** is a visual tool used to organize and connect different compone
 - **Visualizing the flow** of how entities (nodes) interact with each other by connecting data inputs and outputs.
 - **Simplifying content creation** through a visual interface, where each node represents a functionality or execution block, and the connections between them define how data or actions flow between parts.
 
-## Creating the Room Node Graph Editor Window
+## Room Node Graph Editor Window
 
-The first step in the project is to create a custom editor window within Unity. This window, named **Room Node Graph Editor**, serves as the interface for managing procedural dungeon generation. The purpose of this editor is to provide a visual representation of the nodes and their connections.
+The first step is creating a custom **Room Node Graph Editor** window within Unity. This window serves as the interface for managing procedural dungeon generation. It provides a visual representation of the nodes (rooms) and their connections (paths).
 
-By implementing this editor window, we create a dedicated space where we can visualize, manage, and interact with the nodes that represent the various rooms of the dungeon. This interface allows us to add, remove, and connect rooms, ensuring a clear and well-structured dungeon layout.
+The editor window is accessible via Unity's menu at `Window > Dungeon Editor > Room Node Graph Editor`.
 
-The window is accessed via the Unity menu under `Window > Dungeon Editor > Room Node Graph Editor`.
+### Key Features:
 
-## Adding Functionality to the Room Node Graph Editor
+- **Node Layout and Appearance:** 
+  Define the layout properties for nodes (e.g., width, height, padding, border) for visual consistency in the editor.
+  
+- **Connecting Nodes:** 
+  Draw connecting lines between nodes to represent room-to-room connections within the dungeon.
 
-Here, we extend the **Room Node Graph Editor** by introducing key functionalities for managing and visualizing the room nodes and their connections.
+- **User Interaction:**
+  Handle mouse inputs for actions like selecting nodes, dragging them around, and creating connections. A context menu allows the creation of new nodes via a right-click.
+
+- **Visual Feedback:**
+  The editor visually updates to show real-time connections between rooms, helping manage the dungeon structure.
+
+### Workflow:
+
+1. **Node Creation:** 
+   Right-click to create new room nodes in the graph editor.
+
+2. **Node Connections:** 
+   Drag lines from one node to another to form parent-child relationships between rooms, defining dungeon paths.
+
+3. **Node Manipulation:** 
+   Drag and arrange nodes to create a logical dungeon layout. Each node maintains information about its connections, ensuring a structured graph.
+
+---
+
+## Creating and Managing Room Nodes
+
+The **Room Node ScriptableObject (RoomNodeSO)** is the core representation of each room within the graph. This script defines properties, event handling, and relationships between room nodes.
 
 ### Key Concepts:
 
-- **Node Layout and Appearance:** 
-  We define the layout properties of each node, such as width, height, padding, and border, to ensure the nodes are visually distinct and consistently styled within the editor.
+- **Room Node Properties:**
+  Each node has a unique ID, along with references to parent and child nodes (via ID lists) and a room type. These properties allow the node to track its connections and manage relationships in the dungeon layout.
 
-- **Connecting Lines Between Nodes:**
-  To represent the relationships between rooms, we include functionality to draw connecting lines between nodes. This helps visualize how rooms are linked in the dungeon.
-
-- **Event Handling:**
-  The editor window listens for various user interactions, such as mouse clicks and drags. These interactions allow us to:
-  - Create new nodes at the clicked position.
-  - Draw connection lines between nodes.
-  - Manage interactions between nodes, like dragging or selecting.
-
-- **Context Menu for Node Creation:**
-  When right-clicking within the graph editor, a context menu appears that allows the creation of new room nodes at the mouse position.
+- **Event Processing:**
+  The script handles user interactions such as:
+  - **Mouse Down:** Select nodes or initiate connections by right-clicking.
+  - **Mouse Drag:** Drag nodes around the editor interface to rearrange them.
   
-### Workflow Overview:
+- **Node Connections:**
+  Nodes can connect to each other by establishing parent-child relationships through ID references, which helps define the dungeon's layout and paths.
 
-1. **Node Creation:**
-   Users can create new room nodes by right-clicking in the graph editor and selecting an option from the context menu. These nodes are then placed at the mouse position.
+- **Node Types:**
+  The `RoomNodeSO` includes a dropdown menu that lets users select the room type from a predefined list. This allows for flexible customization of each room's behavior or properties.
 
-2. **Node Management:**
-   Each room node is stored within a list and can be manipulated via user interactions. Nodes can be connected to each other, forming a visual graph of the dungeon layout.
+### Workflow:
 
-3. **Dragging Lines to Connect Nodes:**
-   Users can drag lines from one node to another, establishing a connection between parent and child nodes. This connection represents the paths between rooms in the dungeon.
+1. **Creating a Room Node:**
+   A new room node is created in the editor with a unique ID. The node type can be selected from a dropdown menu populated from the available room types.
 
-4. **Visual Representation:**
-   The editor window provides a visual representation of the dungeon's structure, allowing us to see the nodes and their connections in real-time.
+2. **Managing Connections:**
+   Nodes track connections to parent and child nodes, enabling easy visualization of room relationships in the dungeon.
 
-You can find more details on the script's implementation in `Scripts > NodeGraph > Editor`.
+3. **Visual Manipulation:**
+   Users can select, drag, and arrange nodes within the graph editor to map out the dungeon structure.
+
+4. **Event Handling:**
+   The system processes mouse input for selecting, dragging, and connecting nodes, ensuring smooth interaction with the editor.
+
+For detailed logic and implementation, refer to the **RoomNodeSO** script in `Scripts > NodeGraph > RoomNodeSO`.
+
+
+
 
 
