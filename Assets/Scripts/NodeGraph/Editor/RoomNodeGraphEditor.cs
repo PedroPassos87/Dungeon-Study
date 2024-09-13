@@ -14,11 +14,14 @@ public class RoomNodeGraphEditor : EditorWindow
     private RoomNodeSO currentRoomNode = null;
     private RoomNodeTypeListSO roomNodeTypeList;
     
-    //node layout 
+    //node layout values
     private float nodeWidth = 160f;
     private float nodeHeight = 75f;
     private int nodePadding = 25;
     private int nodeBorder = 12;
+    
+    //connecting line values
+    private float connectingLineWidth = 3f;
     
     [MenuItem("Room Node Graph Editor", menuItem = "Window/Dungeon Editor/Room Node Graph Editor")]
     private static void OpenWindow()    
@@ -66,11 +69,17 @@ public class RoomNodeGraphEditor : EditorWindow
         //if a scriptable object of type RoomNodeGraphSO has been selected the process
         if (currentRoomNodeGraph != null)
         {
+            //draw line if being dragged
+            DrawDraggedLine();                 //this method is called first so the track line gets draw first and will appear behind to the room node
+            
+            
             //process events
             ProcessEvents(Event.current);
             
             //draw room nodes
             DrawRoomNodes();
+            
+            
         }
 
         if (GUI.changed)
@@ -78,7 +87,17 @@ public class RoomNodeGraphEditor : EditorWindow
             Repaint();
         }
     }
-    
+
+    private void DrawDraggedLine()
+    {
+        if (currentRoomNodeGraph.linePosition != Vector2.zero)
+        {
+            //draw line from node to line position
+            Handles.DrawBezier(currentRoomNodeGraph.roomNodeToDrawLineFrom.rect.center, currentRoomNodeGraph.linePosition,
+                currentRoomNodeGraph.roomNodeToDrawLineFrom.rect.center, currentRoomNodeGraph.linePosition, Color.white, null, connectingLineWidth);
+        }
+    }
+
 
     private void ProcessEvents(Event currentEvent)
     {
@@ -88,8 +107,8 @@ public class RoomNodeGraphEditor : EditorWindow
             currentRoomNode = IsMouseOverRoomNode(currentEvent);
         }
 
-        //if mouse isnt over a room node
-        if (currentRoomNode == null)
+        //if mouse isn't over a room node or we are currently dragging a line from the room node then process graph events
+        if (currentRoomNode == null || currentRoomNodeGraph.roomNodeToDrawLineFrom != null)
         {
             ProcessRoomNodeGraphEvent(currentEvent);
         }
@@ -124,6 +143,12 @@ public class RoomNodeGraphEditor : EditorWindow
             case EventType.MouseDown:
                 ProcessMouseDownEvent(currentEvent);
                 break;
+
+            //process mouse drag event
+            case EventType.MouseDrag:
+                ProcessMouseDragEvent(currentEvent);
+                break;
+            
             default:
                 break;
         }
@@ -177,6 +202,32 @@ public class RoomNodeGraphEditor : EditorWindow
         
     }
     
+    //process mouse drag event
+    private void ProcessMouseDragEvent(Event currentEvent)
+    {
+        //process right click drag event = draw line
+        if (currentEvent.button == 1)
+        {
+            ProcessRightMouseDragEvent(currentEvent);
+        }
+    }
+
+    //process right mouse drag event = draw line
+    private void ProcessRightMouseDragEvent(Event currentEvent)
+    {
+        if (currentRoomNodeGraph.roomNodeToDrawLineFrom != null)
+        {
+            DragConnectingLine(currentEvent.delta);
+            GUI.changed = true;
+        }
+    }
+
+    //drag connecting line from room node
+    private void DragConnectingLine(Vector2 delta)
+    {
+        currentRoomNodeGraph.linePosition += delta;
+    }
+
     //draw room nodes in the graph window
     private void DrawRoomNodes()
     {
