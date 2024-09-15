@@ -26,6 +26,17 @@ public class RoomNodeGraphSO : ScriptableObject
             roomNodeDictionary[node.id] = node;
         }
     }
+    
+    //get room node by room nodeID
+    public RoomNodeSO GetRoomNode(string roomNodeID)
+    {
+        if (roomNodeDictionary.TryGetValue(roomNodeID, out RoomNodeSO roomNode))  //se acha o id coloca ele no roomNode
+        {
+            return roomNode;
+        }
+
+        return null;
+    }
 
     #region Editor Code
     

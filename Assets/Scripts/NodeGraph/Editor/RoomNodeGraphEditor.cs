@@ -125,6 +125,7 @@ public class RoomNodeGraphEditor : EditorWindow
 
     private void ProcessEvents(Event currentEvent)
     {
+        
         //get room node that mouse is over if its is null or not corrently been dragged
         if (currentRoomNode == null || currentRoomNode.isLeftClickDragging == false)
         {
@@ -375,11 +376,14 @@ public class RoomNodeGraphEditor : EditorWindow
     //draw room nodes in the graph window
     private void DrawRoomNodes()
     {
+        RoomNodeSO selectedRoomNode = null;
+
         //loop through all room nodes and draw them
         foreach (RoomNodeSO roomNode in currentRoomNodeGraph.roomNodeList)
         {
             if (roomNode.isSelected)
             {
+                selectedRoomNode = roomNode;
                 roomNode.Draw(roomNodeSelectedStyle);
             }
             else

@@ -183,10 +183,106 @@ public class RoomNodeSO : ScriptableObject
     //add childID to the node (returns true if the node has been added, false otherwise)
     public bool AddChildRoomNodeIDToRoomNode(string childID)
     {
-        childRoomNodeIDList.Add(childID);
-        return true;
+        //check child node can be added validly to parent
+        if (IsChildRoomValid(childID))
+        {
+            childRoomNodeIDList.Add(childID);
+            return true;
+        }
+        
+        return false;
     }
-    
+
+    //check the child node can be validly added to the parent node - return true if it can be otherwise retur false
+    private bool IsChildRoomValid(string childID)
+    {
+        bool isConnectBossNodeAlredy = false;
+        //check it there is already a connected boss room in the node graph
+        foreach (RoomNodeSO roomNode in roomNodeGraph.roomNodeList)
+        {
+            if (roomNode.roomNodeType.isBossRoom && roomNode.parentRoomNodeIDList.Count>0)
+            {
+                isConnectBossNodeAlredy = true;
+            }
+        }
+        
+        //if the child node has a type of boss room and there is aleready connected boss room node then return false
+        if (roomNodeGraph.GetRoomNode(childID).roomNodeType.isBossRoom && isConnectBossNodeAlredy)
+        {
+            return false;
+        }
+        
+        //if the child node has a type of none  then return false
+        if (roomNodeGraph.GetRoomNode(childID).roomNodeType.isNone)
+        {
+            return false;
+        }
+        
+        //if the node already has a child with this ID return false
+        if (childRoomNodeIDList.Contains(childID))
+        {
+            return false;
+        }
+        
+        //if this node ID and the child ID are the same then return false
+        if (id == childID)
+        {
+            return false;
+        }
+
+        //if this childID is already in the parentID return false
+        if (parentRoomNodeIDList.Contains(childID))
+        {
+            return false;
+        }
+        
+        //
+        //
+        //---------ESSE DE BAIXO É O QUE DEVE SER MUDADO CASO QUEIRA MAIS FILHOS EM UM PAI---------
+        //
+        //
+        
+        //if the child node already has a parent return false
+        if (roomNodeGraph.GetRoomNode(childID).parentRoomNodeIDList.Count > 0)
+        {
+            return false;
+        }
+        
+        //if child is a corridor and this node a corridor return false
+        if (roomNodeGraph.GetRoomNode(childID).roomNodeType.isCorridor && roomNodeType.isCorridor)
+        {
+            return false;
+        }
+        
+        //if child is not a corridor and this node is not a corridor return false
+        if (!roomNodeGraph.GetRoomNode(childID).roomNodeType.isCorridor && !roomNodeType.isCorridor)
+        {
+            return false;
+        }
+        
+        //MAXIMO DE CORREDORES PODE SER MUDADO TAMBÉM
+        //if adding a corridor check that this node has < the maximum permitted child corridors
+        if (roomNodeGraph.GetRoomNode(childID).roomNodeType.isCorridor && childRoomNodeIDList.Count >= Settings.maxChildCorridors)
+        {
+            return false;
+        }
+        
+        //if the child room is an entrance return false - the entrance must always be the top level parent node
+        if (roomNodeGraph.GetRoomNode(childID).roomNodeType.isEntrance)
+        {
+            return false;
+        }
+        
+        //if adding a room to a corridor check that this corridor node doesn't ahve a room added
+        if (!roomNodeGraph.GetRoomNode(childID).roomNodeType.isCorridor && childRoomNodeIDList.Count > 0)
+        {
+            return false;
+        }
+
+        return true;
+
+    }
+
     //add parentID to the node (returns true if the node has been added, false otherwise)
     public bool AddParentRoomNodeIDToRoomNode(string parentID)
     {
