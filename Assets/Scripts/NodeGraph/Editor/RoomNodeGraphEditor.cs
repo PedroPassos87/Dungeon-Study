@@ -15,6 +15,10 @@ public class RoomNodeGraphEditor : EditorWindow
     private GUIStyle roomNodeStyle;
     private GUIStyle roomNodeSelectedStyle;
     private static RoomNodeGraphSO currentRoomNodeGraph;
+
+    private Vector2 graphOffset;
+    private Vector2 graphDrag;
+    
     private RoomNodeSO currentRoomNode = null;
     private RoomNodeTypeListSO roomNodeTypeList;
     
@@ -27,6 +31,10 @@ public class RoomNodeGraphEditor : EditorWindow
     //connecting line values
     private float connectingLineWidth = 3f;
     private float connectingLineArrowSize = 6f;
+    
+    //grid spacing
+    private float gridLarge = 100f;
+    private float gridSmall = 25f;
     
     [MenuItem("Room Node Graph Editor", menuItem = "Window/Dungeon Editor/Room Node Graph Editor")]
     private static void OpenWindow()    
@@ -91,6 +99,8 @@ public class RoomNodeGraphEditor : EditorWindow
         //if a scriptable object of type RoomNodeGraphSO has been selected the process
         if (currentRoomNodeGraph != null)
         {
+            //draw grid
+            
             //draw line if being dragged
             DrawDraggedLine();                 //this method is called first so the track line gets draw first and will appear behind to the room node
             
@@ -125,6 +135,8 @@ public class RoomNodeGraphEditor : EditorWindow
 
     private void ProcessEvents(Event currentEvent)
     {
+        //reset graph drag
+        graphDrag = Vector2.zero;
         
         //get room node that mouse is over if its is null or not corrently been dragged
         if (currentRoomNode == null || currentRoomNode.isLeftClickDragging == false)
@@ -396,6 +408,24 @@ public class RoomNodeGraphEditor : EditorWindow
         {
             ProcessRightMouseDragEvent(currentEvent);
         }
+        //process left click drag event - drag room node graph
+        else if (currentEvent.button == 0)
+        {
+            ProcessLeftMouseDragEvent(currentEvent.delta);
+        }
+    }
+
+    //process left mouse drag event
+    private void ProcessLeftMouseDragEvent(Vector2 dragDelta)
+    {
+        graphDrag = dragDelta;
+
+        for (int i = 0; i < currentRoomNodeGraph.roomNodeList.Count; i++)
+        {
+            currentRoomNodeGraph.roomNodeList[i].DragNode(dragDelta);
+        }
+        
+        GUI.changed = true;
     }
 
     //process right mouse drag event = draw line
