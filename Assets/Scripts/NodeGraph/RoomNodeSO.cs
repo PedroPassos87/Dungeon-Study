@@ -266,7 +266,7 @@ public class RoomNodeSO : ScriptableObject
         //
         
         //if the child node already has a parent return false
-        if (roomNodeGraph.GetRoomNode(childID).parentRoomNodeIDList.Count > 0)
+        if (roomNodeGraph.GetRoomNode(childID).parentRoomNodeIDList.Count > 3)
         {
             return false;
         }

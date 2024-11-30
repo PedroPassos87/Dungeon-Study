@@ -495,7 +495,7 @@ public class RoomNodeGraphEditor : EditorWindow
         Vector2 arrowTailPoint2 =
             midPosition + new Vector2(-direction.y, direction.x).normalized * connectingLineArrowSize;
         
-        //calaculate mid point offset position for arrow head
+        //calculate mid point offset position for arrow head
         Vector2 arrowHeadPoint = midPosition + direction.normalized * connectingLineArrowSize;
         
         //draw arrow
